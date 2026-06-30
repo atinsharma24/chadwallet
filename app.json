@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "xyz.chadwallet.app",
@@ -27,6 +29,15 @@
         "backgroundColor": "#0A0B0D"
       }
     },
-    "plugins": ["expo-dev-client", "expo-secure-store"]
+    "plugins": [
+      "expo-dev-client",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "57e6325c-c9a0-43f5-a117-fe9d87a6849a"
+      }
+    },
+    "owner": "atinsharma24"
   }
 }
