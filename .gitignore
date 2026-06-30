@@ -37,3 +37,6 @@ yarn-error.*
 .idea/
 .vscode/
 *.tsbuildinfo
+
+# Design reference assets (local only)
+design-reference/
