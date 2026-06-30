@@ -108,34 +108,6 @@ export function PortfolioScreen() {
         </View>
       )}
 
-      {/* Action Buttons */}
-      <View style={styles.actionRow}>
-        <View style={styles.actionItem}>
-          <View style={styles.circleBtn}>
-            <Ionicons name="arrow-up" size={24} color={colors.bg} />
-          </View>
-          <Text style={styles.actionLabel}>Send</Text>
-        </View>
-        <View style={styles.actionItem}>
-          <Pressable style={styles.circleBtn} onPress={() => setShowAddress(true)}>
-            <Ionicons name="arrow-down" size={24} color={colors.bg} />
-          </Pressable>
-          <Text style={styles.actionLabel}>Receive</Text>
-        </View>
-        <View style={styles.actionItem}>
-          <View style={styles.circleBtn}>
-            <Ionicons name="download-outline" size={24} color={colors.bg} />
-          </View>
-          <Text style={styles.actionLabel}>Deposit</Text>
-        </View>
-        <View style={styles.actionItem}>
-          <View style={styles.circleBtn}>
-            <Ionicons name="push-outline" size={24} color={colors.bg} />
-          </View>
-          <Text style={styles.actionLabel}>Withdraw</Text>
-        </View>
-      </View>
-
       {!ENV.isMainnet && (
         <Button
           title={airdropping ? 'Requesting…' : 'Request 1 SOL (Devnet Airdrop)'}
@@ -182,6 +154,12 @@ export function PortfolioScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      {/* FAB: reveal wallet address */}
+      <Pressable style={styles.fab} onPress={() => setShowAddress(true)}>
+        <Text style={styles.fabIcon}>⌁</Text>
+        <Text style={styles.fabLabel}>Receive</Text>
+      </Pressable>
 
       <Modal
         visible={showAddress}
@@ -234,11 +212,6 @@ function HoldingRow({ holding }: { holding: Holding }) {
           <Text style={styles.holdingUsd}>{formatUsd(holding.valueUsd)}</Text>
         </View>
       </View>
-      {!holding.isSol && (
-        <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.lg }}>
-          <Button title="Earn Rewards" variant="primary" />
-        </View>
-      )}
     </View>
   );
 }
@@ -358,29 +331,6 @@ const styles = StyleSheet.create({
   total: { ...typography.display, color: colors.text },
   chart: { marginVertical: spacing.md, alignItems: 'center', width: '100%' },
   
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    marginVertical: spacing.lg,
-  },
-  actionItem: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  circleBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionLabel: {
-    ...typography.bodyStrong,
-    color: colors.text,
-  },
-  
   airdrop: { alignSelf: 'stretch', marginTop: spacing.sm },
   sectionTitle: { ...typography.h3, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
   
@@ -421,6 +371,26 @@ const styles = StyleSheet.create({
   activityDot: { width: 8, height: 8, borderRadius: 4 },
   activitySig: { ...typography.caption, color: colors.text, flex: 1 },
   activityTime: { ...typography.caption, color: colors.textTertiary },
+  
+  fab: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing.xl,
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: spacing.lg,
+    height: 52,
+    borderRadius: radius.pill,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  fabIcon: { fontSize: 20, color: colors.textInverse, fontWeight: '900' },
+  fabLabel: { ...typography.bodyStrong, color: colors.textInverse },
   
   modalBackdrop: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
   sheet: {
