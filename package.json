@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start": "expo start --dev-client --offline",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "prebuild": "expo prebuild",
@@ -23,7 +23,6 @@
     "@react-navigation/native-stack": "^6.9.26",
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.95.2",
-    "@supabase/supabase-js": "^2.45.0",
     "@tanstack/react-query": "^5.51.1",
     "buffer": "^6.0.3",
     "expo": "~51.0.28",
@@ -35,7 +34,6 @@
     "expo-dev-client": "~4.0.26",
     "expo-font": "~12.0.10",
     "expo-haptics": "~13.0.1",
-    "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~6.3.1",
     "expo-secure-store": "~13.0.2",
     "expo-status-bar": "~1.12.1",
@@ -56,8 +54,7 @@
     "react-native-webview": "^13.8.6",
     "readable-stream": "^4.5.2",
     "text-encoding": "^0.7.0",
-    "viem": "^2.53.1",
-    "zustand": "^4.5.4"
+    "viem": "^2.53.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

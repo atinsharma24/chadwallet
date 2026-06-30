@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -7,7 +8,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLoginWithEmail, useLoginWithOAuth } from '@privy-io/expo';
 import { Screen } from '@/components/Screen';
 import { Button } from '@/components/Button';
@@ -71,14 +71,11 @@ export function SignInScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.hero}>
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <Image
+            source={require('../../assets/chad-logo.png')}
             style={styles.logo}
-          >
-            <Text style={styles.logoMark}>C</Text>
-          </LinearGradient>
+            resizeMode="cover"
+          />
           <Text style={styles.title}>ChadWallet</Text>
           <Text style={styles.subtitle}>
             Trade Solana memecoins. Your wallet, created in seconds.
@@ -156,13 +153,10 @@ const styles = StyleSheet.create({
   flex: { flex: 1, paddingHorizontal: spacing.xl },
   hero: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
   logo: {
-    width: 80,
-    height: 80,
+    width: 88,
+    height: 88,
     borderRadius: radius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  logoMark: { fontSize: 44, fontWeight: '900', color: colors.bg },
   title: { ...typography.display, color: colors.text },
   subtitle: {
     ...typography.body,

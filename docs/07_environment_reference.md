@@ -16,8 +16,6 @@ When a required variable is missing, `src/config/env.ts::required()` logs a warn
 | `EXPO_PUBLIC_ALCHEMY_DEVNET_KEY` | `alchemyDevnetKey` | For devnet | Alchemy dashboard | `rpcEndpoint()` falls back to Solana's public `clusterApiUrl('devnet')`. Portfolio and activity still load but may be slower or rate-limited. |
 | `EXPO_PUBLIC_ALCHEMY_MAINNET_KEY` | `alchemyMainnetKey` | For mainnet | Alchemy dashboard | `rpcEndpoint()` falls back to `clusterApiUrl('mainnet-beta')`. Portfolio loads but public RPC is heavily rate-limited in practice. |
 | `EXPO_PUBLIC_API_PROXY_URL` | `apiProxyUrl` | For production | Cloudflare Worker deploy URL | `marketFetch` switches to direct API calls. If neither `DEV_BIRDEYE_KEY` nor `DEV_CODEX_KEY` is set, Birdeye and Codex requests are sent without API keys and will be rejected. See fallback chain below. |
-| `EXPO_PUBLIC_SUPABASE_URL` | `supabaseUrl` | No | Supabase project settings | Supabase client is `null`. No effect on current app behavior — no code path currently uses the Supabase client. |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | `supabaseAnonKey` | No | Supabase project settings | Same as above. |
 | `EXPO_PUBLIC_DEV_BIRDEYE_KEY` | `devBirdeyeKey` | For local dev | Birdeye developer dashboard | `marketFetch` sends Birdeye requests without `X-API-KEY`. Birdeye returns 401. Falls through to Codex fallback (see below). |
 | `EXPO_PUBLIC_DEV_CODEX_KEY` | `devCodexKey` | For local dev | Codex developer dashboard | `marketFetch` sends Codex requests without `Authorization`. Codex returns 401. |
 

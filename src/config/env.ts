@@ -27,9 +27,6 @@ export const ENV = {
   // Cloudflare Worker that proxies Birdeye/Codex and injects secret keys.
   apiProxyUrl: (process.env.EXPO_PUBLIC_API_PROXY_URL ?? '').replace(/\/$/, ''),
 
-  supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
-  supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
-
   // DEV-ONLY direct keys. Used only when no proxy is configured so you can run
   // locally before deploying the Cloudflare Worker. In production, leave these
   // blank and route through EXPO_PUBLIC_API_PROXY_URL so keys never ship.

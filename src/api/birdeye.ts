@@ -63,10 +63,11 @@ interface BirdeyeOverview {
   priceChange24hPercent?: number;
   liquidity?: number;
   v24hUSD?: number;
-  mc?: number;
+  marketCap?: number;
   fdv?: number;
   holder?: number;
-  supply?: number;
+  circulatingSupply?: number;
+  totalSupply?: number;
   extensions?: { website?: string; twitter?: string };
 }
 
@@ -84,12 +85,14 @@ export async function fetchTokenOverview(address: string): Promise<TokenOverview
     logoURI: d.logoURI,
     price: d.price ?? 0,
     priceChange24h: d.priceChange24hPercent ?? 0,
-    marketCap: d.mc,
+    // Birdeye returns `marketCap` (not `mc`) and `circulatingSupply`/
+    // `totalSupply` (not `supply`); reading the old names left these undefined.
+    marketCap: d.marketCap,
     fdv: d.fdv,
     liquidity: d.liquidity,
     volume24h: d.v24hUSD ?? 0,
     holders: d.holder,
-    supply: d.supply,
+    supply: d.circulatingSupply ?? d.totalSupply,
     website: d.extensions?.website,
     twitter: d.extensions?.twitter,
   };
@@ -122,7 +125,6 @@ interface BirdeyeTrade {
   side: 'buy' | 'sell';
   owner: string;
   blockUnixTime: number;
-  volumeUSD?: number;
   to?: { uiAmount?: number; price?: number };
   from?: { uiAmount?: number; price?: number };
 }
@@ -133,15 +135,22 @@ export async function fetchTokenTrades(address: string, limit = 25): Promise<Tok
     `/defi/txs/token?address=${address}&tx_type=swap&sort_type=desc&offset=0&limit=${limit}`,
   );
   const items = res.data?.items ?? [];
-  return items.map((t) => ({
-    txHash: t.txHash,
-    side: t.side,
-    owner: t.owner,
-    priceUsd: t.to?.price ?? t.from?.price ?? 0,
-    volumeUsd: t.volumeUSD ?? 0,
-    tokenAmount: t.to?.uiAmount ?? t.from?.uiAmount ?? 0,
-    unixTime: t.blockUnixTime,
-  }));
+  return items.map((t) => {
+    // Birdeye's txs endpoint does not return a volumeUSD field; derive the
+    // trade's USD value from either leg (uiAmount * price). Both legs of a
+    // swap are ~equal in USD, so prefer `to` and fall back to `from`.
+    const toUsd = (t.to?.uiAmount ?? 0) * (t.to?.price ?? 0);
+    const fromUsd = (t.from?.uiAmount ?? 0) * (t.from?.price ?? 0);
+    return {
+      txHash: t.txHash,
+      side: t.side,
+      owner: t.owner,
+      priceUsd: t.to?.price ?? t.from?.price ?? 0,
+      volumeUsd: toUsd || fromUsd,
+      tokenAmount: t.to?.uiAmount ?? t.from?.uiAmount ?? 0,
+      unixTime: t.blockUnixTime,
+    };
+  });
 }
 
 /** Batched USD prices for a set of mints — used to value portfolio holdings. */

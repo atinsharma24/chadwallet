@@ -26,8 +26,7 @@ Solana DEX aggregator. Called directly from the device (no proxy) to obtain swap
 **Alchemy (Solana RPC)**
 Provides the `Connection` object used by `@solana/web3.js` for all on-chain reads and writes: `getBalance`, `getParsedTokenAccountsByOwner`, `getSignaturesForAddress`, `requestAirdrop`. Configured in `src/lib/solana.ts`. Falls back to the public Solana cluster API (`clusterApiUrl`) when the Alchemy key is absent.
 
-**Supabase**
-A `SupabaseClient` is initialized in `src/lib/supabase.ts` using `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`. The client is `null` when credentials are absent. **As of the current codebase, no screen or hook imports the supabase export.** The client is created but never called. Supabase configuration is optional and has no effect on app behavior.
+> **Supabase note:** Supabase is listed as an available tool in the assignment, but the app does not use it for any flow (auth is Privy, market data is Birdeye/Codex, balances are Alchemy RPC, net-worth history is local AsyncStorage). The previously-scaffolded, never-imported `SupabaseClient` and its config were removed to keep the dependency surface aligned with what the app actually does.
 
 ---
 

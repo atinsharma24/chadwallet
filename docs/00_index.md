@@ -7,7 +7,7 @@ Entry point for all technical documentation. Each document covers one concern on
 ## Documents
 
 **[01 — Architecture](01_architecture.md)**
-How the major external services (Privy, Alchemy, Birdeye, Codex, Jupiter, Cloudflare Worker, Supabase) fit together, and the data path from a screen to each upstream API. Includes a flowchart of the full request pipeline. Start here if you are new to the codebase or need to understand why a service call is failing.
+How the major external services (Privy, Alchemy, Birdeye, Codex, Jupiter, Cloudflare Worker) fit together, and the data path from a screen to each upstream API. Includes a flowchart of the full request pipeline. Start here if you are new to the codebase or need to understand why a service call is failing.
 
 **[02 — Auth and Wallet](02_auth_and_wallet.md)**
 The sign-in flow (email OTP and Google OAuth), when the embedded Solana wallet is created, and how `RootNavigator` uses auth state to gate the tab stack. Includes sequence diagrams for both login paths. Read this before touching anything in `src/lib/privy.tsx`, `src/hooks/useWallet.ts`, `src/navigation/RootNavigator.tsx`, or `src/screens/SignInScreen.tsx`.
@@ -28,7 +28,7 @@ The four screens, the two-level navigation structure, the `seedPrice`/`seedChang
 A table of every variable in `.env.example`, cross-referenced against `src/config/env.ts`. Explains what each variable does, where to obtain it, and what specifically degrades (not just "the app breaks") when it is absent. Traces the full Birdeye → Codex fallback chain for the case where both keys are missing.
 
 **[08 — Decision Log](08_decisions.md)**
-One entry per non-obvious design choice in the codebase: the Cloudflare Worker proxy, the dual-provider market data strategy, TanStack Query vs zustand (and whether zustand is actually used), Privy embedded wallet, local AsyncStorage net-worth history, and React Navigation native stack. Each entry states what was decided, why, what the alternative would have been, and what tradeoff was accepted.
+One entry per non-obvious design choice in the codebase: the Cloudflare Worker proxy, the dual-provider market data strategy, TanStack Query for all server state, Privy embedded wallet, local AsyncStorage net-worth history, and React Navigation native stack. Each entry states what was decided, why, what the alternative would have been, and what tradeoff was accepted.
 
 **[09 — Glossary](09_glossary.md)**
 Plain-language definitions of Solana and crypto terms that appear in the codebase: lamports, mint address, SPL token, slippage in basis points, versioned transaction, devnet vs mainnet-beta, RPC endpoint, embedded wallet vs self-custody, swap route.

@@ -37,8 +37,8 @@ AsyncStorage is cleared on reinstall. The net-worth history is lost. The chart s
 
 ## Two honest limitations to raise proactively
 
-**1. Zustand is a declared dependency but is completely unused.**
-`package.json` lists `zustand ^4.5.4` as a dependency. No file under `src/` imports it. The README describes "Zustand-style hooks" which further implies it's in use. It isn't. This should be removed before the next release — an unused dependency adds bundle size and creates confusion for future maintainers.
+**1. Live swaps are unverified on real liquidity.**
+The Jupiter swap flow is implemented and correctly gated to mainnet (devnet shows a preview state, since Jupiter has no devnet liquidity). But it has only been exercised up to quote/preview — no real on-chain swap has been executed end-to-end, because that needs mainnet SOL in the embedded wallet. The signing path (`wallet.getProvider().request({ method: 'signAndSendTransaction' })`) is wired but not yet proven against a confirmed signature.
 
 **2. There are no automated tests.**
 The only verification is a five-item manual checklist in `SETUP.md`. The pure formatting functions in `src/theme/format.ts` have no tests despite having several edge-case branches (sub-penny values, compact notation, sign handling). The Birdeye→Codex fallback logic has no test that confirms an empty Birdeye response actually triggers the Codex call. Both would be low-cost to add.

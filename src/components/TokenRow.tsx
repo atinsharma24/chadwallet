@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { TrendingToken } from '@/api/types';
-import { colors, radius, spacing, typography } from '@/theme';
+import { colors, spacing, typography } from '@/theme';
 import { formatUsd, compactNumber } from '@/theme/format';
 import { useSparkline } from '@/hooks/useSparkline';
 import { TokenLogo } from './TokenLogo';

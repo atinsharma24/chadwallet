@@ -23,12 +23,11 @@ via Jupiter, and track your portfolio.
 
 - **Framework:** React Native via **Expo (Dev Client)** + TypeScript
 - **Auth & Wallet:** [Privy](https://privy.io) (`@privy-io/expo`) embedded Solana wallet
-- **State / Data:** **Zustand**-style hooks + **TanStack Query** (caching, refetch, pull-to-refresh)
+- **Server state:** **TanStack Query** (caching, refetch, pull-to-refresh)
 - **RPC:** **Alchemy** Solana (devnet/mainnet)
 - **Market data:** **Birdeye** (REST) with **Codex.io** (GraphQL) fallback
 - **Swaps:** **Jupiter** Aggregator v6
 - **Key hiding:** **Cloudflare Worker** proxy for Birdeye/Codex secrets
-- **Backup:** **Supabase** (optional auth/data backup)
 - **Charts:** `react-native-svg` (no heavy native chart dep)
 
 All services are used on their **free tiers**.

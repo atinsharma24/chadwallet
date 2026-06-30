@@ -34,19 +34,19 @@ Where the rationale comes from an explicit code comment, that is noted. Where it
 
 ---
 
-## 3. TanStack Query manages all server state; zustand is a listed dependency but is not used
+## 3. TanStack Query manages all server state (no separate global store)
 
-**Decision:** All remote data (market data, portfolio, activity) is managed by TanStack Query hooks in `src/hooks/`. There is no in-memory global store.
+**Decision:** All remote data (market data, portfolio, activity) is managed by TanStack Query hooks in `src/hooks/`. There is no in-memory global store; screen-local UI state uses React `useState`, and net-worth history uses `AsyncStorage`.
 
 **What it solves:** TanStack Query provides caching, background refetch, deduplication, and loading/error states without writing any of that machinery manually.
 
-**Alternative:** Use zustand (which is declared in `dependencies` in `package.json`) as a client-side store, either instead of or alongside TanStack Query.
+**Alternative:** Add a client-side store library (e.g. zustand) instead of or alongside TanStack Query.
 
-**Tradeoff accepted:** A pattern that treats remote data and local UI state differently (TanStack Query for remote data, React `useState` for screen-local state). This is conventional but means there is no single state tree.
+**Tradeoff accepted:** Remote data and local UI state are handled by different mechanisms (TanStack Query cache vs. React `useState`). This is conventional but means there is no single unified state tree.
 
-**Important note:** `zustand` appears in `package.json` as a dependency but is **not imported anywhere in `src/`**. It is not used. This is an unused dependency that should be removed from `package.json` and `package-lock.json`. The README's description "Zustand-style hooks + TanStack Query" is inaccurate — there are no Zustand stores. All state is either TanStack Query cache, React `useState`, or `AsyncStorage` (for net-worth history).
+**Note:** `zustand` was previously declared in `package.json` but imported nowhere; it was removed so the dependency list reflects what the app actually uses. The `text-encoding` polyfill and Privy's required peer dependencies (`viem`, `permissionless`, `react-native-passkeys`, `react-native-qrcode-styled`, `react-native-webview`, `expo-apple-authentication`) remain because Privy needs them even on a Solana-only app.
 
-**Source:** Inferred from the codebase — no `import ... from 'zustand'` exists in any file under `src/`. The README claim is not supported by the code.
+**Source:** Implementation — no `import ... from 'zustand'` exists anywhere under `src/`.
 
 ---
 

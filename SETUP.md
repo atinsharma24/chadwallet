@@ -123,15 +123,48 @@ Start with tiny amounts (e.g. 0.01 SOL) when testing real swaps.
 ## 5. Build for Appetize.io
 
 Appetize runs a native build (`.apk` for Android, `.app`/simulator build for iOS).
+The `preview` profile in `eas.json` is already set up for this (Android `apk`,
+iOS `simulator: true`).
 
-### 5a. Create the build with EAS
+> The standalone preview build bundles JS at build time, so it does **not** use a
+> local Metro server and is unaffected by the local `api.expo.dev` manifest hang
+> (the `--offline` workaround only matters for `npm run start` on this machine).
+> EAS's cloud builders reach `api.expo.dev` normally.
+
+### 5a. Link the project (one-time)
 
 ```bash
 npm i -g eas-cli
 eas login
-eas build:configure          # links the project, writes the EAS projectId
-#   → put the printed projectId into app.json > expo.extra.eas.projectId
+eas init                      # creates/links the EAS project and writes the real
+                              # projectId into app.json (replaces the
+                              # REPLACE_WITH_EAS_PROJECT_ID placeholder)
+```
 
+### 5b. Provide build-time env vars (required)
+
+A standalone build inlines `EXPO_PUBLIC_*` vars at build time — they are not read
+from your local `.env` by the cloud builder. Register them once with EAS so the
+preview behaves like local dev:
+
+```bash
+# Repeat for each EXPO_PUBLIC_* var the app needs (preview environment):
+eas env:create --environment preview --name EXPO_PUBLIC_PRIVY_APP_ID      --value "<your value>"
+eas env:create --environment preview --name EXPO_PUBLIC_PRIVY_CLIENT_ID   --value "<your value>"
+eas env:create --environment preview --name EXPO_PUBLIC_SOLANA_NETWORK    --value "devnet"
+eas env:create --environment preview --name EXPO_PUBLIC_ALCHEMY_DEVNET_KEY  --value "<your value>"
+eas env:create --environment preview --name EXPO_PUBLIC_ALCHEMY_MAINNET_KEY --value "<your value>"
+eas env:create --environment preview --name EXPO_PUBLIC_DEV_BIRDEYE_KEY   --value "<your value>"
+eas env:create --environment preview --name EXPO_PUBLIC_DEV_CODEX_KEY     --value "<your value>"
+```
+
+(These are `EXPO_PUBLIC_*` — they ship in the bundle by design, same as local dev.
+For a hardened build, deploy the Cloudflare Worker and set `EXPO_PUBLIC_API_PROXY_URL`
+instead of the dev keys — see step 2.)
+
+### 5c. Create the build
+
+```bash
 # Android APK (simplest for Appetize):
 eas build --profile preview --platform android
 
@@ -139,16 +172,13 @@ eas build --profile preview --platform android
 eas build --profile preview --platform ios
 ```
 
-When the build finishes, EAS gives you a download URL for the artifact.
+When the build finishes, EAS prints a download URL for the artifact.
 
-### 5b. Upload to Appetize
+### 5d. Upload to Appetize
 
-1. Download the `.apk` (Android) or simulator `.app` (zipped) from EAS.
-2. Go to <https://appetize.io/upload>, upload the artifact.
-3. Appetize returns a **public preview link** — that's the deliverable.
-
-> Tip: pass env vars to EAS via `eas.json` `env` blocks or `eas secret:create`
-> so the build is configured the same way as your local `.env`.
+1. Download the `.apk` (Android) or simulator `.app`/`.tar.gz` (iOS) from the EAS build page.
+2. Go to <https://appetize.io/upload>, upload the artifact (free tier is fine).
+3. Appetize returns a **public preview link** — that's the deliverable to share.
 
 ---
 
@@ -162,6 +192,7 @@ When the build finishes, EAS gives you a download URL for the artifact.
 | Privy login does nothing | Confirm App ID + that Email/Google are enabled in the Privy dashboard. |
 | Swap disabled | Expected on Devnet. Switch to Mainnet to enable Jupiter swaps. |
 | `expo install` network error | Use `npm install` with pinned versions (this repo already pins them). |
+| Dev client stuck on "There was a problem loading the project" / `timeout` (OkHttp `HeadersReader`) | The Expo dev server's manifest endpoint (`GET /`) blocks on a no-timeout request to `https://api.expo.dev/v2/project/configuration/schema/<sdk>` when that host is unreachable (VPN/proxy/offline). The bundle endpoint works, but the dev client fetches the manifest first and times out. Run Metro with `--offline` (already wired into `npm run start`) to skip that call. |
 
 ---
 
