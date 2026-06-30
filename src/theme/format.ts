@@ -24,8 +24,8 @@ export function compactNumber(value?: number | null): string {
 
 export function formatPercent(value?: number | null): string {
   if (value === undefined || value === null || Number.isNaN(value)) return '—';
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(2)}%`;
+  const sign = value > 0 ? '▲ ' : value < 0 ? '▼ ' : '';
+  return `${sign}${Math.abs(value).toFixed(2)}%`;
 }
 
 export function formatTokenAmount(value?: number | null, maxFrac = 4): string {

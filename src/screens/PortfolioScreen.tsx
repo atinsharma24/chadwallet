@@ -9,9 +9,11 @@ import {
   Text,
   useWindowDimensions,
   View,
+  TextInput,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@/components/Screen';
 import { TokenLogo } from '@/components/TokenLogo';
 import { PriceChart } from '@/components/PriceChart';
@@ -24,7 +26,7 @@ import { Holding, requestDevnetAirdrop } from '@/api/portfolio';
 import { ENV } from '@/config/env';
 import { explorerUrl, shortAddress } from '@/lib/solana';
 import { colors, radius, spacing, typography } from '@/theme';
-import { formatTokenAmount, formatUsd, timeAgo } from '@/theme/format';
+import { formatTokenAmount, formatUsd, timeAgo, formatPercent } from '@/theme/format';
 import { Linking } from 'react-native';
 
 export function PortfolioScreen() {
@@ -67,11 +69,34 @@ export function PortfolioScreen() {
 
   const renderHeader = () => (
     <View style={styles.headerBlock}>
-      <Text style={styles.eyebrow}>Net Worth</Text>
-      <Text style={styles.total}>{formatUsd(portfolio?.totalUsd)}</Text>
-      <Text style={styles.solLine}>
-        {formatTokenAmount(portfolio?.solBalance, 4)} SOL
-      </Text>
+      <View style={styles.topSearchRow}>
+        <View style={styles.iconBtn}>
+          <Ionicons name="time-outline" size={22} color={colors.textSecondary} />
+        </View>
+        <View style={styles.searchBox}>
+          <Ionicons name="search" size={18} color={colors.textSecondary} style={{ marginRight: 8 }} />
+          <TextInput
+            placeholder="Search for tokens or wallets"
+            placeholderTextColor={colors.textSecondary}
+            style={styles.searchInput}
+            editable={false}
+          />
+          <Ionicons name="copy-outline" size={18} color={colors.textSecondary} style={{ marginLeft: 8 }} />
+        </View>
+      </View>
+
+      <View style={styles.balanceRow}>
+        <Text style={styles.total}>{formatUsd(portfolio?.totalUsd)}</Text>
+        <Pressable style={styles.walletPill} onPress={copyAddress}>
+          <Ionicons name="copy-outline" size={14} color={colors.textSecondary} />
+          <Text style={styles.walletPillText}>{address ? shortAddress(address, 4) : '...'}</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.valueRow}>
+        <Text style={styles.percentPositive}>{formatPercent(100)} Past year</Text>
+        <Text style={styles.valueLabel}>Value</Text>
+      </View>
 
       {netWorth.length > 1 && (
         <View style={styles.chart}>
@@ -82,6 +107,34 @@ export function PortfolioScreen() {
           />
         </View>
       )}
+
+      {/* Action Buttons */}
+      <View style={styles.actionRow}>
+        <View style={styles.actionItem}>
+          <View style={styles.circleBtn}>
+            <Ionicons name="arrow-up" size={24} color={colors.bg} />
+          </View>
+          <Text style={styles.actionLabel}>Send</Text>
+        </View>
+        <View style={styles.actionItem}>
+          <Pressable style={styles.circleBtn} onPress={() => setShowAddress(true)}>
+            <Ionicons name="arrow-down" size={24} color={colors.bg} />
+          </Pressable>
+          <Text style={styles.actionLabel}>Receive</Text>
+        </View>
+        <View style={styles.actionItem}>
+          <View style={styles.circleBtn}>
+            <Ionicons name="download-outline" size={24} color={colors.bg} />
+          </View>
+          <Text style={styles.actionLabel}>Deposit</Text>
+        </View>
+        <View style={styles.actionItem}>
+          <View style={styles.circleBtn}>
+            <Ionicons name="push-outline" size={24} color={colors.bg} />
+          </View>
+          <Text style={styles.actionLabel}>Withdraw</Text>
+        </View>
+      </View>
 
       {!ENV.isMainnet && (
         <Button
@@ -130,12 +183,6 @@ export function PortfolioScreen() {
         />
       )}
 
-      {/* FAB: reveal wallet address */}
-      <Pressable style={styles.fab} onPress={() => setShowAddress(true)}>
-        <Text style={styles.fabIcon}>⌁</Text>
-        <Text style={styles.fabLabel}>Receive</Text>
-      </Pressable>
-
       <Modal
         visible={showAddress}
         transparent
@@ -170,22 +217,28 @@ export function PortfolioScreen() {
 function HoldingRow({ holding }: { holding: Holding }) {
   const symbol = holding.isSol ? 'SOL' : shortAddress(holding.mint, 4);
   return (
-    <View style={styles.holdingRow}>
-      <TokenLogo
-        uri={holding.isSol ? 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png' : undefined}
-        symbol={holding.isSol ? 'SOL' : symbol}
-        size={38}
-      />
-      <View style={styles.holdingId}>
-        <Text style={styles.holdingSymbol}>{symbol}</Text>
-        <Text style={styles.holdingAmount}>
-          {formatTokenAmount(holding.amount, 4)} tokens
-        </Text>
+    <View style={styles.holdingRowWrapper}>
+      <View style={styles.holdingRow}>
+        <TokenLogo
+          uri={holding.isSol ? 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png' : undefined}
+          symbol={holding.isSol ? 'SOL' : symbol}
+          size={40}
+        />
+        <View style={styles.holdingId}>
+          <Text style={styles.holdingSymbol}>{holding.isSol ? 'Solana' : 'ChadWallet'}</Text>
+          <Text style={styles.holdingAmount}>
+            {formatTokenAmount(holding.amount, 1)} {symbol}
+          </Text>
+        </View>
+        <View style={styles.holdingValue}>
+          <Text style={styles.holdingUsd}>{formatUsd(holding.valueUsd)}</Text>
+        </View>
       </View>
-      <View style={styles.holdingValue}>
-        <Text style={styles.holdingUsd}>{formatUsd(holding.valueUsd)}</Text>
-        <Text style={styles.holdingPrice}>{formatUsd(holding.priceUsd)}</Text>
-      </View>
+      {!holding.isSol && (
+        <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.lg }}>
+          <Button title="Earn Rewards" variant="primary" />
+        </View>
+      )}
     </View>
   );
 }
@@ -229,18 +282,112 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingTop: spacing.sm,
+    display: 'none', // Hide standard top bar in favor of custom layout
   },
   title: { ...typography.h1, color: colors.text },
   logout: { ...typography.caption, color: colors.textSecondary },
   listContent: { paddingBottom: 120 },
-  headerBlock: { paddingHorizontal: spacing.lg, gap: spacing.xs, alignItems: 'flex-start' },
-  eyebrow: { ...typography.micro, color: colors.textSecondary, textTransform: 'uppercase' },
+  headerBlock: { paddingHorizontal: spacing.lg, gap: spacing.xs, alignItems: 'stretch' },
+  
+  topSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    height: 36,
+  },
+  searchInput: {
+    flex: 1,
+    color: colors.text,
+    ...typography.caption,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.md,
+  },
+  walletPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceAlt,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    gap: 6,
+  },
+  walletPillText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  valueRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  percentPositive: {
+    ...typography.caption,
+    color: colors.positive,
+    fontWeight: '600',
+  },
+  valueLabel: {
+    ...typography.caption,
+    color: colors.primary,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
   total: { ...typography.display, color: colors.text },
-  solLine: { ...typography.body, color: colors.textSecondary },
   chart: { marginVertical: spacing.md, alignItems: 'center', width: '100%' },
+  
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    marginVertical: spacing.lg,
+  },
+  actionItem: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  circleBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionLabel: {
+    ...typography.bodyStrong,
+    color: colors.text,
+  },
+  
   airdrop: { alignSelf: 'stretch', marginTop: spacing.sm },
   sectionTitle: { ...typography.h3, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+  
+  holdingRowWrapper: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
   holdingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -253,7 +400,7 @@ const styles = StyleSheet.create({
   holdingAmount: { ...typography.caption, color: colors.textSecondary },
   holdingValue: { alignItems: 'flex-end', gap: 2 },
   holdingUsd: { ...typography.bodyStrong, color: colors.text },
-  holdingPrice: { ...typography.caption, color: colors.textSecondary },
+  
   activityWrap: { paddingHorizontal: spacing.lg },
   activityCard: {
     backgroundColor: colors.surface,
@@ -274,25 +421,7 @@ const styles = StyleSheet.create({
   activityDot: { width: 8, height: 8, borderRadius: 4 },
   activitySig: { ...typography.caption, color: colors.text, flex: 1 },
   activityTime: { ...typography.caption, color: colors.textTertiary },
-  fab: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.xl,
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: spacing.lg,
-    height: 52,
-    borderRadius: radius.pill,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
-  },
-  fabIcon: { fontSize: 20, color: colors.textInverse, fontWeight: '900' },
-  fabLabel: { ...typography.bodyStrong, color: colors.textInverse },
+  
   modalBackdrop: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: colors.bgElevated,

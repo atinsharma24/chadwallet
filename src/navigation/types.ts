@@ -16,6 +16,8 @@ export type RootStackParamList = {
 
 export type TabParamList = {
   Trending: undefined;
+  Memes: undefined;
+  Discover: undefined;
   Portfolio: undefined;
 };
 

@@ -5,8 +5,8 @@
 
 export const colors = {
   // Surfaces
-  bg: '#0A0B0D',
-  bgElevated: '#121419',
+  bg: '#000000',
+  bgElevated: '#111317',
   surface: '#16191F',
   surfaceAlt: '#1C2027',
   border: '#23262D',

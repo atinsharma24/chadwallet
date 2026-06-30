@@ -40,3 +40,4 @@ yarn-error.*
 
 # Design reference assets (local only)
 design-reference/
+assets/apks

@@ -25,15 +25,14 @@ function TokenRowBase({ token, onPress, showSparkline = true }: Props) {
       onPress={() => onPress(token)}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <Text style={styles.rank}>{token.rank ?? '·'}</Text>
       <TokenLogo uri={token.logoURI} symbol={token.symbol} size={40} />
 
       <View style={styles.idCol}>
         <Text style={styles.symbol} numberOfLines={1}>
-          {token.symbol}
+          {token.name || token.symbol}
         </Text>
         <Text style={styles.meta} numberOfLines={1}>
-          Vol {compactNumber(token.volume24h)}
+          ${compactNumber(token.volume24h)}
         </Text>
       </View>
 
@@ -65,12 +64,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   pressed: { backgroundColor: colors.bgElevated },
-  rank: {
-    ...typography.caption,
-    color: colors.textTertiary,
-    width: 18,
-    textAlign: 'center',
-  },
   idCol: { flex: 1, minWidth: 0, gap: 2 },
   symbol: { ...typography.bodyStrong, color: colors.text },
   meta: { ...typography.caption, color: colors.textSecondary },

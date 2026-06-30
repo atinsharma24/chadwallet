@@ -1,17 +1,32 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { TabParamList } from './types';
 import { colors, typography } from '@/theme';
 import { TrendingScreen } from '@/screens/TrendingScreen';
 import { PortfolioScreen } from '@/screens/PortfolioScreen';
+import { EmptyState } from '@/components/States';
+import { Screen } from '@/components/Screen';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
-// Lightweight emoji glyphs keep the bundle small; swap for vector icons from
-// the ChadWallet asset pack if desired (see SETUP.md > Branding).
-function TabIcon({ glyph, focused }: { glyph: string; focused: boolean }) {
-  return <Text style={[styles.icon, { opacity: focused ? 1 : 0.45 }]}>{glyph}</Text>;
+function ComingSoonScreen({ title }: { title: string }) {
+  return (
+    <Screen>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <EmptyState title={`${title} (Coming Soon)`} subtitle="This feature is not part of the assignment." />
+      </View>
+    </Screen>
+  );
+}
+
+function MemesScreen() {
+  return <ComingSoonScreen title="Memes" />;
+}
+
+function DiscoverScreen() {
+  return <ComingSoonScreen title="Discover" />;
 }
 
 export function AppTabs() {
@@ -28,12 +43,36 @@ export function AppTabs() {
       <Tab.Screen
         name="Trending"
         component={TrendingScreen}
-        options={{ tabBarIcon: ({ focused }) => <TabIcon glyph="🔥" focused={focused} /> }}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={22} color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="Memes"
+        component={MemesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="sparkles" size={22} color={color} />,
+        }}
+        // @ts-ignore
+        listeners={{ tabPress: (e) => e.preventDefault() }}
+      />
+      <Tab.Screen
+        name="Discover"
+        component={DiscoverScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={22} color={color} />,
+        }}
+        // @ts-ignore
+        listeners={{ tabPress: (e) => e.preventDefault() }}
       />
       <Tab.Screen
         name="Portfolio"
         component={PortfolioScreen}
-        options={{ tabBarIcon: ({ focused }) => <TabIcon glyph="💼" focused={focused} /> }}
+        options={{
+          tabBarLabel: 'Account',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person" size={22} color={color} />,
+        }}
       />
     </Tab.Navigator>
   );
@@ -49,5 +88,4 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   } as never,
   label: { ...typography.micro },
-  icon: { fontSize: 20 },
 });
