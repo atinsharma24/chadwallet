@@ -33,51 +33,11 @@ via Jupiter, and track your portfolio.
 
 All services are used on their **free tiers**.
 
-## Architecture
+## Architecture and Project Structure
 
-```
-Privy (auth + embedded wallet)
-        │
-        ▼
-  React Native UI ──► TanStack Query hooks ──► API clients
-        │                                        │
-        │                                        ├─► Birdeye / Codex  (via Cloudflare Worker proxy)
-        │                                        ├─► Jupiter v6       (direct, mainnet swaps)
-        │                                        └─► Alchemy RPC      (balances, tx, airdrop)
-        ▼
-  Supabase (optional backup)
-```
+For full technical documentation, see **[docs/00_index.md](docs/00_index.md)**.
 
-Market-data requests go through `marketFetch()`, which routes to the Cloudflare
-Worker when `EXPO_PUBLIC_API_PROXY_URL` is set (keeping Birdeye/Codex keys off the
-device) and falls back to direct calls with dev keys for local development.
-
-## Project Structure
-
-```
-chadwallet/
-├── App.tsx                     # Providers: GestureHandler, SafeArea, Privy, Query, Navigation
-├── index.js                    # Entry — imports polyfills first, registers App
-├── app.json / eas.json         # Expo + EAS build config
-├── metro.config.js             # web3 shims + package-exports resolution
-├── babel.config.js             # reanimated + module-resolver (@/ alias)
-├── .env.example                # All env vars documented
-├── assets/                     # Icon / splash placeholders (replace with brand art)
-├── cloudflare/                 # API proxy Worker (hides Birdeye/Codex keys)
-│   ├── worker.js
-│   └── wrangler.toml
-└── src/
-    ├── config/env.ts           # Typed env access, network flag, mints
-    ├── theme/                  # Colors, spacing, typography, formatters
-    ├── lib/                    # polyfills, solana connection, privy, query, supabase
-    ├── api/                    # birdeye, codex, jupiter, portfolio, http, types
-    ├── hooks/                  # useTrendingTokens, useTokenDetails, usePortfolio,
-    │                           #   useWallet, useSwap, useSparkline, useNetWorthHistory
-    ├── components/             # Screen, Button, TokenRow, Sparkline, PriceChart,
-    │                           #   SwapPanel, StatCard, TokenLogo, States, PercentBadge
-    ├── navigation/             # RootNavigator (auth gate), AppTabs, types
-    └── screens/                # SignIn, Trending, TokenDetails, Portfolio
-```
+In brief: Privy handles auth and the embedded Solana wallet. TanStack Query hooks in `src/hooks/` fetch market data from Birdeye (primary) and Codex (fallback), both routed through a Cloudflare Worker that injects API keys so secrets never appear in the app bundle. Jupiter is called directly from the device for swap quotes and transactions (no key required). Portfolio balances come from Alchemy's Solana RPC. Net-worth history is stored locally in AsyncStorage.
 
 ## Quick Start
 
